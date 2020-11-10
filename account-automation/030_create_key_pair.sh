@@ -8,7 +8,7 @@ NEWACCOUNTNAME=""
 aws ec2 create-key-pair \
     --key-name $NEWACCOUNTNAME-key-pair \
     --query 'KeyMaterial' \
-    --output text > $NEWACCOUNTNAME-key-pair.pem
+    --output text > $NEWACCOUNTNAME-key-pair.pem \
     --profile $NEWACCOUNTNAME
 
 
@@ -16,7 +16,7 @@ aws ec2 create-key-pair \
 
 aws secretsmanager create-secret \
     --name $NEWACCOUNTNAME-key-pair \
-    --secret-string file://$NEWACCOUNTNAME-key-pair.pem
+    --secret-string file://$NEWACCOUNTNAME-key-pair.pem \
     --profile $NEWACCOUNTNAME
 
 

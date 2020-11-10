@@ -1,6 +1,5 @@
 # SET VARIABLES ---------------------------------------------------------------
 
-ROOTACCOUNTID=""
 USERNAME=""
 
 NEWACCOUNTID=""
