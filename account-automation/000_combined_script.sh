@@ -14,6 +14,7 @@ USERNAME=""
 NEWACCOUNTNAME=""
 EMAIL="aws+${NEWACCOUNTNAME}@gmail.com"
 ROLENAME="OrganizationAccountAccessRole"
+REGION="eu-west-2"
 
 echo "$(date) - Variable - USERNAME = $USERNAME"
 echo "$(date) - Variable - NEWACCOUNTNAME = $NEWACCOUNTNAME"
@@ -137,7 +138,7 @@ aws ec2 create-key-pair \
     --query 'KeyMaterial' \
     --output text > $NEWACCOUNTNAME-key-pair.pem \
     --profile $NEWACCOUNTNAME \
-    --region eu-west-2
+    --region $REGION
 
 echo "$(date) - Create Key Pair - Finished"
 
@@ -150,7 +151,7 @@ aws secretsmanager create-secret \
     --name $NEWACCOUNTNAME-key-pair \
     --secret-string file://$NEWACCOUNTNAME-key-pair.pem \
     --profile $NEWACCOUNTNAME \
-    --region eu-west-2
+    --region $REGION
 
 echo "$(date) - Store Key Pair in Secrets Manager - Finished"
 
