@@ -39,6 +39,21 @@ aws iam attach-user-policy \
     --user-name $USERNAME \
     --policy-arn $POLICYARN
 
+sleep 120
+
+
+# CHECK POLICY IS ATTACHED -----------------------------------------------------
+
+export ATTACHEDPOLICY=$( 
+    aws iam list-attached-user-policies \
+        --user-name account-automation \
+        --profile programmatic_admin \
+        --query "AttachedPolicies[?PolicyArn=='$POLICYARN'].{PolicyArn:PolicyArn}" \
+        --output text 
+)
+
+[[ -z "$ATTACHEDPOLICY" ]] && { exit 1; }
+
 
 # UPDATE LOCAL CONFIG ---------------------------------------------------------
 

@@ -4,7 +4,7 @@
 
 exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' 0 1 2 3
-exec 1>account_automation_$(date +"%Y-%m-%d_%H-%M-%S").log 2>&1
+exec 1>account_automation_$(date +"%Y-%m-%d_%H%M").log 2>&1
 
 
 # SET VARIABLES ---------------------------------------------------------------
@@ -33,7 +33,7 @@ aws organizations create-account \
     --output text 
 )
 
-echo "$(date) - Create Account - Completed"
+echo "$(date) - Create Account - Finished"
 
 echo "$(date) - Variable - CREATENEWACCOUNTSTATUSID = $CREATENEWACCOUNTSTATUSID"
 
@@ -49,7 +49,7 @@ export NEWACCOUNTID=$(
         --output text 
 )
 
-echo "$(date) - Get Account ID - Completed"
+echo "$(date) - Get Account ID - Finished"
 
 [[ -z "$NEWACCOUNTID" ]] && { echo "$(date) - Error - Variable NEWACCOUNTID is empty" ; exit 1; }
 
@@ -82,7 +82,7 @@ export POLICYARN=$(
 
 rm assume_role_policy.json
 
-echo "$(date) - Create Policy - Completed"
+echo "$(date) - Create Policy - Finished"
 
 echo "$(date) - Sleep 120s - Waiting for policy to be attachable"
 sleep 120
@@ -96,7 +96,23 @@ aws iam attach-user-policy \
     --user-name $USERNAME \
     --policy-arn $POLICYARN
 
-echo "$(date) - Attach Policy - Completed"
+echo "$(date) - Attach Policy - Finished"
+
+echo "$(date) - Sleep 120s - Waiting for policy to attach to user"
+sleep 120
+
+
+# CHECK POLICY IS ATTACHED -----------------------------------------------------
+
+export ATTACHEDPOLICY=$( 
+    aws iam list-attached-user-policies \
+        --user-name account-automation \
+        --profile programmatic_admin \
+        --query "AttachedPolicies[?PolicyArn=='$POLICYARN'].{PolicyArn:PolicyArn}" \
+        --output text 
+)
+
+[[ -z "$ATTACHEDPOLICY" ]] && { echo "$(date) - Error - Policy Not Attached" ; exit 1; }
 
 
 # UPDATE LOCAL CONFIG ---------------------------------------------------------
@@ -109,7 +125,7 @@ aws configure set \
 aws configure set \
     profile.$NEWACCOUNTNAME.source_profile default
 
-echo "$(date) - Update Local Config - Completed"
+echo "$(date) - Update Local Config - Finished"
 
 
 # CREATE KEY PAIR -------------------------------------------------------------
@@ -123,7 +139,7 @@ aws ec2 create-key-pair \
     --profile $NEWACCOUNTNAME \
     --region eu-west-2
 
-echo "$(date) - Create Key Pair - Completed"
+echo "$(date) - Create Key Pair - Finished"
 
 
 # STORE IN SECRETS MANAGER ----------------------------------------------------
@@ -136,7 +152,7 @@ aws secretsmanager create-secret \
     --profile $NEWACCOUNTNAME \
     --region eu-west-2
 
-echo "$(date) - Store Key Pair in Secrets Manager - Completed"
+echo "$(date) - Store Key Pair in Secrets Manager - Finished"
 
 
 # REMOVE LOCAL FILE -----------------------------------------------------------
