@@ -107,8 +107,7 @@ sleep 120
 
 export ATTACHEDPOLICY=$( 
     aws iam list-attached-user-policies \
-        --user-name account-automation \
-        --profile programmatic_admin \
+        --user-name $USERNAME
         --query "AttachedPolicies[?PolicyArn=='$POLICYARN'].{PolicyArn:PolicyArn}" \
         --output text 
 )
