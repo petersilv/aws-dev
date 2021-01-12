@@ -12,7 +12,7 @@ exec 1>account_automation_$(date +"%Y-%m-%d_%H%M").log 2>&1
 USERNAME=""
 
 NEWACCOUNTNAME=""
-EMAIL="aws+${NEWACCOUNTNAME}@gmail.com"
+EMAIL="aws+$NEWACCOUNTNAME@gmail.com"
 ROLENAME="OrganizationAccountAccessRole"
 REGION="eu-west-2"
 
@@ -107,7 +107,7 @@ sleep 120
 
 export ATTACHEDPOLICY=$( 
     aws iam list-attached-user-policies \
-        --user-name $USERNAME
+        --user-name $USERNAME \
         --query "AttachedPolicies[?PolicyArn=='$POLICYARN'].{PolicyArn:PolicyArn}" \
         --output text 
 )
