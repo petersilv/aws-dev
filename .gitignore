@@ -6,3 +6,7 @@ _archive/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# S3 Snowpipe
+s3-snowpipe/lambda/*.zip
+s3-snowpipe/lambda/variables.py
