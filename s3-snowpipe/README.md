@@ -15,7 +15,7 @@ The first thing to create is the S3 bucket that will store your data to be read 
 
 When first creating the stack the parameters will be as below (you will need to complete subsequent steps before being able to fill in the other parameters).
 
-![console_screenshot_01](other/images/01.png)
+![console_screenshot_01](other/images/README_01.png)
 
 ### 02 - Connect Snowflake to the S3 bucket
 
@@ -23,7 +23,7 @@ When first creating the stack the parameters will be as below (you will need to 
 
 In Snowflake run the Integration script ([01_integration.sql](snowflake/01_integration.sql)) to create the Storage Integration object in Snowflake that will allow it to read files from the S3 bucket. The script requires a IAM Role ARN that gives permission to access the contents of the bucket. This Role was created in the S3 CloudFormation template and the value to copy into the script can be found in the Outputs of the stack.
 
-![console_screenshot_02_1](other/images/02_1.png)
+![console_screenshot_02_1](other/images/README_02_1.png)
 
 #### Update permissions for access from Snowflake
 
@@ -33,7 +33,7 @@ From the console select your S3 stack and click the `Update` option. You want to
 
 If you are using the CLI then the same [deploy script](cloudformation/scripts/deploy_s3.sh) can be used, just update the Parameter values in the script.
 
-![console_screenshot_02_2](other/images/02_2.png)
+![console_screenshot_02_2](other/images/README_02_2.png)
 
 ### 03 - Enable automated update of Snowflake
 
@@ -47,9 +47,23 @@ The result of the Snowpipe script will be a `NOTIFICATION_CHANNEL` string which 
 
 This process can again be done by updating the S3 CloudFormation stack. Follow the same steps as before to update, this time switching the `SnowflakeSnowPipeCreated` parameter to `True` and `SnowflakeSnowpipeQueueARN` to the string that is displayed in Snowflake.
 
-![console_screenshot_03](other/images/03.png)
+![console_screenshot_03](other/images/README_03.png)
 
 Snowflake should now be connected to your S3 bucket via the Snowpipe and adding files should result in those files being populated into the Snowflake table.
+
+### 04 - Create Lamdba function
+
+This step is optional, if you are populating the S3 buckets through some other source or have a different Lamdba deployment method then this can be skipped.
+
+#### Create S3 folders & upload Lambda files
+
+Now you have an S3 bucket you have somewhere to put the files that will be used to create the Lambda function. How you organise the bucket is up to you but I generally create a `code/` folder to contain the Lamdba files and a `data/` folder to write the data for Snowflake.
+
+The files for both Lamdba functions and Lamdba layers will need to be uploaded in a `.zip` format.
+
+#### Create Lambda Cloudformation stack
+
+With the files uploaded you can create the Lambda function that will write the data into S3. There is a sample CloudFormation template ([cfn_lambda.yaml](cloudformation/templates/cfn_lambda.yaml)) included in this repository that will create a function that calls an API and stores the response as JSON. The template does not contain parameters, if you want to tweak the deployment for your own use case you will need to edit the template file.
 
 ## Resources
 
