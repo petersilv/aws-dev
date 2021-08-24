@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Initial account IAM setup, including cross account access
+
+Parameters:
+  SubAccountID1: 
+    Type: String
+
+  SubAccountID2: 
+    Type: String
+
+Resources:
+
+  IAMUserCLI:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: cli-admin
+      Groups:
+        - Administrators
+
+  IAMUserTerraform:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: terraform-admin
+      Groups:
+        - Administrators
+
+  CrossAccountPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      ManagedPolicyName: CrossAccountAdminAccess
+      Users:
+        - !Ref IAMUserCLI
+        - !Ref IAMUserTerraform
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Resource: !Sub arn:aws:iam::${SubAccountID1}:role/CrossAccountRole
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Resource: !Sub arn:aws:iam::${SubAccountID2}:role/CrossAccountRole
