@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Initial account IAM setup, including cross account access
+
+Parameters:
+  MainAccountID: 
+    Type: String
+
+Resources:
+
+  iamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: CrossAccountRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal: 
+              AWS: !Sub arn:aws:iam::${MainAccountID}:root
